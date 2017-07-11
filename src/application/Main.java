@@ -2,6 +2,8 @@ package application;
 
 import smartcity.gtfs.*;
 import smartcity.util.GPSCoordinate;
+import util.Console;
+import util.Timer;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -19,20 +21,54 @@ public class Main  {
     static Double originLatit = -30.135593;
     static Double originLongi = -51.223171;
 
-    // Destination coordinates.
+    // Destination coordinates. Giuseppe
     static Double destinationLatit = -30.062872;
     static Double destinationLongi = -51.178117;
 
+
+    // Destination coordinates. Praia de Belas
+//    static Double destinationLatit = -30.048933;
+//    static Double destinationLongi = -51.227854;
+
+    // Destination coordinates. Senac
+//    static Double destinationLatit = -30.035180;
+//    static Double destinationLongi = -51.226698;
+
     // Maximum distance to the bus stop.
-    static int threshold = 500;
+    static int threshold = 250;
+
+    private static Console c = new Console();
+    private static Timer t = new Timer();
 
     public static void findRoute() throws FileNotFoundException {
+        t.timerOn(); // Start load timer.
         GPSCoordinate originCoord = new GPSCoordinate(originLatit, originLongi);
         GPSCoordinate destinationCoord = new GPSCoordinate(destinationLatit, destinationLongi);
         Router router = new Router(originCoord, destinationCoord, threshold);
-        router.testPossibleStops(originCoord);
-        System.out.println("=============");
-        router.possibleTrips(router.possibleStops(originCoord));
+        System.out.println("Load complete. (" + t.timerOff() + " sec)"); // Stop load timer.
+
+        t.timerOn(); // Start mapping timer.
+        router.mapBuses();
+        System.out.println("Buses mapping complete. (" + t.timerOff() + " sec)"); // Stop mapping timer.
+
+        t.timerOn(); // Start mapping timer.
+        router.mapStations();
+        System.out.println("Bus stops mapping complete. (" + t.timerOff() + " sec)"); // Stop mapping timer.
+
+
+//        router.testPossibleStops(originCoord);
+//        System.out.println("=============<>=============");
+//        router.possibleStops(originCoord);
+//        System.out.println("=============<>=============");
+//        router.tripPrinter(router.possibleTrips(originCoord));
+//        router.testPossibleStops(destinationCoord);
+//        router.allPossibleTrips(router.possibleStops(originCoord));
+//        router.simpleRoute();
+        router.findSimpeRoute();
+        System.out.println(t.timerOff());
+        System.out.println("=============<>=============");
+        router.attempt();
+        System.out.println("=============<>=============");
     }
 
 /*    public static void tester() throws FileNotFoundException {
